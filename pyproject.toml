@@ -35,6 +35,7 @@ requires-python = ">=3.12"
 license = { file = "LICENSE" }
 dependencies = [
     "clinspector>=0.2.0",
+    "fieldz>=0.1.0",
     "jinjarope>=0.16.0",
     "pydantic",
     # Only add below (Copier)
