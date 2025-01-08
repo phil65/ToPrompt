@@ -1,5 +1,19 @@
-from toprompt.to_prompt import Template, to_prompt, AnyPromptType
+from toprompt.to_prompt import (
+    Template,
+    to_prompt,
+    AnyPromptType,
+    render_prompt,
+    PromptConvertible,
+    PromptTypeConvertible,
+)
 
 __version__ = "0.0.1"
 
-__all__ = ["AnyPromptType", "Template", "to_prompt"]
+__all__ = [
+    "AnyPromptType",
+    "PromptConvertible",
+    "PromptTypeConvertible",
+    "Template",
+    "render_prompt",
+    "to_prompt",
+]
