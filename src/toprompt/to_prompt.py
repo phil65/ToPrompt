@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-from collections.abc import Callable, Coroutine
+from collections.abc import Awaitable, Callable, Coroutine
 from datetime import datetime
 import re
 from typing import Any, Literal, Protocol, TypeVar
@@ -35,14 +35,14 @@ T = TypeVar("T")
 class PromptConvertible(Protocol):
     """Protocol for instances that can be converted to prompts."""
 
-    def __prompt__(self) -> str: ...
+    def __prompt__(self) -> str | Awaitable[str]: ...
 
 
 class PromptTypeConvertible(Protocol):
     """Protocol for types that can be converted to prompts."""
 
     @classmethod
-    def __prompt_type__(cls) -> str: ...
+    def __prompt_type__(cls) -> str | Awaitable[str]: ...
 
 
 class FieldFormattable(Protocol):
@@ -102,11 +102,19 @@ async def to_prompt(  # noqa: PLR0911
 
         case str():
             return obj
+
         case type() if hasattr(obj, "__prompt_type__"):
-            return obj.__prompt_type__()
+            result = obj.__prompt_type__()
+            if isinstance(result, Awaitable):
+                return await result
+            return result
 
         case _ if hasattr(obj, "__prompt__"):
-            return obj.__prompt__()  # pyright: ignore[reportAttributeAccessIssue]
+            # pyright: ignore[reportAttributeAccessIssue]
+            result = obj.__prompt__()  # pyright: ignore[reportAttributeAccessIssue]
+            if isinstance(result, Awaitable):
+                return await result
+            return result
 
         case datetime():
             return obj.isoformat()
