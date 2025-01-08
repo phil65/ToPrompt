@@ -4,6 +4,7 @@ import argparse
 import asyncio
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import datetime
+import importlib.util
 import re
 from typing import Any, Literal, Protocol, TypeVar
 
@@ -132,7 +133,10 @@ async def to_prompt(  # noqa: PLR0911
             flags_str = f" ({', '.join(flags)})" if flags else ""
             return f"Pattern: {obj.pattern!r}{flags_str}"
 
-        case BasePrompt():
+        case _ if is_base_prompt(obj):
+            from llmling import BasePrompt
+
+            assert isinstance(obj, BasePrompt)
             messages = await obj.format(kwargs)
             return "\n".join(msg.get_text_content() for msg in messages)
 
@@ -180,6 +184,14 @@ async def to_prompt(  # noqa: PLR0911
 
         case _:
             return str(obj)
+
+
+def is_base_prompt(obj: Any) -> bool:
+    if importlib.util.find_spec("llmling") is not None:
+        from llmling import BasePrompt
+
+        return isinstance(obj, BasePrompt)
+    return False
 
 
 def render_prompt(
