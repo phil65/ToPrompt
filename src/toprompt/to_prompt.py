@@ -152,7 +152,7 @@ async def to_prompt(  # noqa: PLR0911
             from toprompt.sqlmodel_types import generate_schema_description
 
             # Get class documentation first
-            schema_doc = generate_schema_description(obj.__class__)
+            schema_doc = generate_schema_description(obj.__class__)  # type: ignore
             # Add current values
             values = "\nCurrent Values:\n"
             for field_name, value in obj.__dict__.items():
