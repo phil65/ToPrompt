@@ -8,10 +8,7 @@ import importlib.util
 import re
 from typing import Any, Literal, Protocol, TypeVar
 
-from clinspector import get_cmd_info
-from fieldz import get_adapter
 from pydantic import BaseModel
-from sqlmodel import SQLModel
 
 from toprompt.cli_types import (
     ClickCommandLike,
@@ -28,7 +25,6 @@ from toprompt.sqlite_types import (
     get_sqlite_schema,
     is_sqlite_db,
 )
-from toprompt.sqlmodel_types import generate_schema_description
 
 
 T = TypeVar("T")
@@ -145,10 +141,16 @@ async def to_prompt(  # noqa: PLR0911
             messages = await obj.format(kwargs)
             return "\n".join(msg.get_text_content() for msg in messages)
 
-        case type() if issubclass(obj, SQLModel):  # SQLModel class
+        case type() if obj.__module__.startswith("sqlmodel."):
+            from toprompt.sqlmodel_types import generate_schema_description
+
             return generate_schema_description(obj)
 
-        case _ if isinstance(obj, SQLModel):  # SQLModel instance
+        case _ if hasattr(obj, "__module__") and obj.__module__.startswith(
+            "sqlmodel."
+        ):  # SQLModel instance
+            from toprompt.sqlmodel_types import generate_schema_description
+
             # Get class documentation first
             schema_doc = generate_schema_description(obj.__class__)
             # Add current values
@@ -159,6 +161,8 @@ async def to_prompt(  # noqa: PLR0911
             return schema_doc + values
 
         case _ if is_cli_object(obj):
+            from clinspector import get_cmd_info
+
             cmd_info = get_cmd_info(obj)
             if cmd_info is None:
                 msg = f"Could not get CLI info for {type(obj)}"
@@ -219,6 +223,8 @@ def render_prompt(
 
 def can_format_fields(obj: Any) -> bool:
     """Check if object can be inspected by fieldz."""
+    from fieldz import get_adapter
+
     try:
         get_adapter(obj)
     except TypeError:
