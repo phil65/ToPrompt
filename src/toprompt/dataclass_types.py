@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import Any, TypeVar
 
-from fieldz import fields
-
 
 T = TypeVar("T")
 
 
 def format_dataclass_like(obj: Any) -> str:
     """Format object instance showing structure and current values."""
+    from fieldz import fields
+
     try:
         obj_fields = fields(obj)
     except TypeError:

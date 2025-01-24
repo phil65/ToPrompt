@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sqlite3
 from typing import TYPE_CHECKING, Any, Protocol, TypedDict, runtime_checkable
 
 import upath
@@ -8,6 +7,7 @@ import upath
 
 if TYPE_CHECKING:
     import os
+    import sqlite3
 
 
 @runtime_checkable
@@ -56,11 +56,15 @@ class IndexInfo(TypedDict):
 
 def is_sqlite_db(obj: Any) -> bool:
     """Check if object is a SQLite database."""
+    import sqlite3
+
     return isinstance(obj, sqlite3.Connection)
 
 
 def get_db_path(conn: sqlite3.Connection) -> str:
     """Get the path for a SQLite database connection."""
+    import sqlite3
+
     try:
         cursor = conn.cursor()
         cursor.execute("PRAGMA database_list")
@@ -79,6 +83,8 @@ def get_sqlite_schema(db: str | os.PathLike[str] | sqlite3.Connection) -> str:
     Args:
         db: Path to SQLite database file or Connection object
     """
+    import sqlite3
+
     if isinstance(db, sqlite3.Connection):
         conn = db
         should_close = False
