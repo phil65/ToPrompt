@@ -2,8 +2,6 @@
 
 [![PyPI License](https://img.shields.io/pypi/l/toprompt.svg)](https://pypi.org/project/toprompt/)
 [![Package status](https://img.shields.io/pypi/status/toprompt.svg)](https://pypi.org/project/toprompt/)
-[![Daily downloads](https://img.shields.io/pypi/dd/toprompt.svg)](https://pypi.org/project/toprompt/)
-[![Weekly downloads](https://img.shields.io/pypi/dw/toprompt.svg)](https://pypi.org/project/toprompt/)
 [![Monthly downloads](https://img.shields.io/pypi/dm/toprompt.svg)](https://pypi.org/project/toprompt/)
 [![Distribution format](https://img.shields.io/pypi/format/toprompt.svg)](https://pypi.org/project/toprompt/)
 [![Wheel availability](https://img.shields.io/pypi/wheel/toprompt.svg)](https://pypi.org/project/toprompt/)
@@ -21,12 +19,8 @@
 [![Github last commit](https://img.shields.io/github/last-commit/phil65/toprompt)](https://github.com/phil65/toprompt/commits)
 [![Github release date](https://img.shields.io/github/release-date/phil65/toprompt)](https://github.com/phil65/toprompt/releases)
 [![Github language count](https://img.shields.io/github/languages/count/phil65/toprompt)](https://github.com/phil65/toprompt)
-[![Github commits this week](https://img.shields.io/github/commit-activity/w/phil65/toprompt)](https://github.com/phil65/toprompt)
 [![Github commits this month](https://img.shields.io/github/commit-activity/m/phil65/toprompt)](https://github.com/phil65/toprompt)
-[![Github commits this year](https://img.shields.io/github/commit-activity/y/phil65/toprompt)](https://github.com/phil65/toprompt)
 [![Package status](https://codecov.io/gh/phil65/toprompt/branch/main/graph/badge.svg)](https://codecov.io/gh/phil65/toprompt/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![PyUp](https://pyup.io/repos/github/phil65/toprompt/shield.svg)](https://pyup.io/repos/github/phil65/toprompt/)
 
 [Read the documentation!](https://phil65.github.io/toprompt/)
-
