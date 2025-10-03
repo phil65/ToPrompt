@@ -1,8 +1,7 @@
 from __future__ import annotations
 
+import pathlib
 from typing import TYPE_CHECKING, Any, Protocol, TypedDict, runtime_checkable
-
-import upath
 
 
 if TYPE_CHECKING:
@@ -89,7 +88,7 @@ def get_sqlite_schema(db: str | os.PathLike[str] | sqlite3.Connection) -> str:
         conn = db
         should_close = False
     else:
-        path = upath.UPath(db)
+        path = pathlib.Path(db)
         if not path.exists():
             msg = f"Database file not found: {path}"
             raise FileNotFoundError(msg)
