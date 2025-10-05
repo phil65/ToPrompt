@@ -27,7 +27,6 @@ class PydanticModel(BaseModel):
     value: int
 
 
-@pytest.mark.asyncio
 async def test_basic_types():
     """Test basic stdlib types."""
     # Simple types
@@ -52,7 +51,6 @@ async def test_basic_types():
     assert "ignorecase" in result
 
 
-@pytest.mark.asyncio
 async def test_dataclass():
     """Test dataclass support."""
     obj = SimpleDataclass(name="test", value=42)
@@ -62,7 +60,6 @@ async def test_dataclass():
     assert "42" in result
 
 
-@pytest.mark.asyncio
 async def test_pydantic():
     """Test pydantic model support."""
     obj = PydanticModel(name="test", value=42)
@@ -71,7 +68,6 @@ async def test_pydantic():
     assert "42" in result
 
 
-@pytest.mark.asyncio
 async def test_argparse():
     """Test ArgumentParser support."""
     parser = argparse.ArgumentParser(description="Test parser")
@@ -81,7 +77,6 @@ async def test_argparse():
     assert "--flag" in result
 
 
-@pytest.mark.asyncio
 async def test_sqlite():
     """Test SQLite support."""
     # Create a temporary in-memory database
