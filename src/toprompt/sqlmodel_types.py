@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 from textwrap import dedent
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 
 if TYPE_CHECKING:
     from sqlmodel import SQLModel
-
-
-T = TypeVar("T")
 
 
 def generate_schema_description(model: type[SQLModel]) -> str:

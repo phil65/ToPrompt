@@ -6,7 +6,7 @@ from collections.abc import Awaitable, Callable, Coroutine
 from datetime import datetime
 import importlib.util
 import re
-from typing import Any, Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel
 
@@ -25,9 +25,6 @@ from toprompt.sqlite_types import (
     get_sqlite_schema,
     is_sqlite_db,
 )
-
-
-T = TypeVar("T")
 
 
 class PromptConvertible(Protocol):
