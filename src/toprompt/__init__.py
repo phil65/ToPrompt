@@ -1,14 +1,8 @@
 from __future__ import annotations
 
-try:
-    from importlib.metadata import version
-except ImportError:
-    from importlib_metadata import version  # Python < 3.8
+from importlib.metadata import version
 
-try:
-    __version__ = version("toprompt")
-except Exception:
-    __version__ = "unknown"
+__version__ = version("toprompt")
 
 from toprompt.to_prompt import (
     Template,
