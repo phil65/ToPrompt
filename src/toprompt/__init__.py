@@ -1,4 +1,7 @@
-"""ToPrompt: Convert python objects to LLM-friendly descriptions"""
+"""ToPrompt: main package.
+
+Convert python objects to LLM-friendly descriptions.
+"""
 
 from __future__ import annotations
 
@@ -6,7 +9,7 @@ from importlib.metadata import version
 
 __version__ = version("toprompt")
 __title__ = "ToPrompt"
-__description__ = "Convert python objects to LLM-friendly descriptions"
+
 __author__ = "Philipp Temminghoff"
 __author_email__ = "philipptemminghoff@googlemail.com"
 __copyright__ = "Copyright (c) 2025 Philipp Temminghoff"
