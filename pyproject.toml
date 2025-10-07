@@ -1,6 +1,6 @@
 [project]
 name = "toprompt"
-version = "0.3.1"
+version = "1.0.0"
 description = "Convert python objects to LLM-friendly descriptions"
 readme = "README.md"
 requires-python = ">=3.13"
