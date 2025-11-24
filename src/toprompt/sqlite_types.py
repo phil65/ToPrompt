@@ -192,8 +192,7 @@ def get_table_info(cursor: sqlite3.Cursor, table: str) -> list[str]:
     if foreign_keys:
         lines.append("\nForeign Keys:")
         lines.extend(
-            f"- {fk['from_col']} -> {fk['to_table']}.{fk['to_col']}"
-            for fk in foreign_keys
+            f"- {fk['from_col']} -> {fk['to_table']}.{fk['to_col']}" for fk in foreign_keys
         )
 
     # Indices

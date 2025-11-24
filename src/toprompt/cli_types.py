@@ -33,9 +33,7 @@ def is_click_command(obj: Any) -> bool:
     Tries to detect Click commands by their distinctive attributes,
     without requiring Click to be installed.
     """
-    return isinstance(obj, ClickCommandLike) and obj.__class__.__module__.startswith(
-        "click"
-    )
+    return isinstance(obj, ClickCommandLike) and obj.__class__.__module__.startswith("click")
 
 
 def is_typer_command(obj: Any) -> bool:
@@ -44,9 +42,7 @@ def is_typer_command(obj: Any) -> bool:
     Tries to detect Typer apps by their distinctive attributes,
     without requiring Typer to be installed.
     """
-    return isinstance(obj, TyperCommandLike) and obj.__class__.__module__.startswith(
-        "typer"
-    )
+    return isinstance(obj, TyperCommandLike) and obj.__class__.__module__.startswith("typer")
 
 
 def is_cli_object(obj: Any) -> bool:
