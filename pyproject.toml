@@ -29,10 +29,9 @@ classifiers = [
 dependencies = [
   "clinspector>=0.2.0",
   "fieldz>=0.1.0",
-  "jinjarope>=0.16.0",
+  "jinja2>=3.1",
   "pydantic",
   # Only add below (Copier)
-  "sqlmodel>=0.0.22",
 ]
 
 [project.urls]
@@ -50,6 +49,7 @@ dev = [
   # Only add below (Copier)
   "pytest-asyncio>=0.25.2",
   "pytest-cov",
+  "sqlmodel>=0.0.22",
 ]
 benchmark = ["pyinstrument"]
 docs = [
@@ -75,6 +75,11 @@ exclude_lines = [
   "except ImportError",
   'if __name__ == "__main__":',
 ]
+
+[tool.deptry.per_rule_ignores]
+# Optional integrations, only used when installed (guarded by find_spec).
+DEP001 = ["cappa", "cleo", "llmling"]
+DEP003 = ["click", "typer"]
 
 [tool.mknodes]
 allowed-commit-types = [
