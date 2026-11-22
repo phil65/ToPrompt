@@ -45,6 +45,7 @@ dependencies = [
   "fieldz>=0.1.0",
   "jinja2>=3.1",
   "pydantic",
+  "schemez",
   # Only add below (Copier)
 ]
 
@@ -95,6 +96,8 @@ exclude_lines = [
 # Optional integrations, only used when installed (guarded by find_spec).
 DEP001 = ["cappa", "cleo", "llmling"]
 DEP003 = ["click", "typer"]
+# Kept on purpose (template dependency).
+DEP002 = ["schemez"]
 
 [tool.mknodes]
 allowed-commit-types = [
