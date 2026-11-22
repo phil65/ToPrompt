@@ -48,7 +48,8 @@ def format_fastapi_app(app: Any) -> str:
             # Request body
             if (body := details.get("requestBody")) and (
                 ref := (
-                    body.get("content", {})
+                    body
+                    .get("content", {})
                     .get("application/json", {})
                     .get("schema", {})
                     .get("$ref")
@@ -64,7 +65,8 @@ def format_fastapi_app(app: Any) -> str:
                     desc = response.get("description", "No description")
                     lines.append(f"    {status}: {desc}")
                     if ref := (
-                        response.get("content", {})
+                        response
+                        .get("content", {})
                         .get("application/json", {})
                         .get("schema", {})
                         .get("$ref")

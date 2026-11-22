@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-import datetime
+import datetime as dt
 import re
 import sqlite3
 
@@ -40,8 +40,8 @@ async def test_basic_types():
     assert await to_prompt(("x", "y")) == "x\ny"
 
     # Datetime
-    dt = datetime.datetime(2024, 1, 1, 12, 0)
-    assert await to_prompt(dt) == "2024-01-01T12:00:00"
+    dt_obj = dt.datetime(2024, 1, 1, 12, 0)
+    assert await to_prompt(dt_obj) == "2024-01-01T12:00:00"
 
     # Regex
     pattern = re.compile(r"\d+", re.IGNORECASE)

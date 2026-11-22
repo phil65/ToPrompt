@@ -1,7 +1,7 @@
 site_name: "ToPrompt"
 site_description: "Convert python objects to LLM-friendly descriptions"
-repo_url: "https://github.com/phil65/toprompt/"
-site_url: https://phil65.github.io/toprompt/
+repo_url: "https://github.com/phil65/ToPrompt/"
+site_url: https://phil65.github.io/ToPrompt/
 site_author: "Philipp Temminghoff"
 copyright: Copyright &copy; 2025 Philipp Temminghoff
 

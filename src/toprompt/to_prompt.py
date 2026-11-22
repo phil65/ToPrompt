@@ -6,7 +6,7 @@ from collections.abc import Awaitable, Callable, Coroutine
 from datetime import datetime
 import importlib.util
 import re
-from typing import Any, Literal, Protocol
+from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 from pydantic import BaseModel
 
@@ -25,6 +25,10 @@ from toprompt.sqlite_types import (
     get_sqlite_schema,
     is_sqlite_db,
 )
+
+
+if TYPE_CHECKING:
+    from sqlmodel import SQLModel
 
 
 class PromptConvertible(Protocol):
@@ -100,14 +104,13 @@ async def to_prompt(  # noqa: PLR0911
             return obj
 
         case type() if hasattr(obj, "__prompt_type__"):
-            result = obj.__prompt_type__()
+            result = cast("type[PromptTypeConvertible]", obj).__prompt_type__()
             if isinstance(result, Awaitable):
                 return await result
             return result
 
         case _ if hasattr(obj, "__prompt__"):
-            # pyright: ignore[reportAttributeAccessIssue]
-            result = obj.__prompt__()  # pyright: ignore[reportAttributeAccessIssue]
+            result = cast("PromptConvertible", obj).__prompt__()
             if isinstance(result, Awaitable):
                 return await result
             return result
@@ -141,7 +144,7 @@ async def to_prompt(  # noqa: PLR0911
         case type() if obj.__module__.startswith("sqlmodel."):
             from toprompt.sqlmodel_types import generate_schema_description
 
-            return generate_schema_description(obj)
+            return generate_schema_description(cast("type[SQLModel]", obj))
 
         case _ if hasattr(obj, "__module__") and obj.__module__.startswith(
             "sqlmodel."
