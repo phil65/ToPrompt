@@ -47,10 +47,6 @@ def generate_schema_description(model: type[SQLModel]) -> str:
         fields.append(" ".join(parts))
 
     # Build complete description
-    return dedent(f"""
-        Table: {table.name}
-        Description: {model.__doc__ or "No description available"}
-
-        Fields:
-        {chr(10).join(fields)}
-        """)
+    description = dedent(model.__doc__ or "No description available").strip()
+    lines = [f"Table: {table.name}", f"Description: {description}", "", "Fields:", *fields]
+    return "\n".join(lines) + "\n"

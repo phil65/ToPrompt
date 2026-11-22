@@ -93,5 +93,23 @@ async def test_sqlite():
     conn.close()
 
 
+async def test_sqlmodel_table():
+    from sqlmodel import Field, SQLModel
+
+    class Hero(SQLModel, table=True):
+        """A hero."""
+
+        id: int | None = Field(default=None, primary_key=True)
+        name: str = Field(description="Hero name")
+
+    result = await to_prompt(Hero)
+    assert result.startswith("Table: hero")
+    assert "Description: Hero name" in result
+
+    result = await to_prompt(Hero(name="x"))
+    assert "Table: hero" in result
+    assert "- name: 'x'" in result
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

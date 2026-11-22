@@ -141,18 +141,16 @@ async def to_prompt(  # noqa: PLR0911
             messages = await obj.format(kwargs)
             return "\n".join(msg.get_text_content() for msg in messages)
 
-        case type() if obj.__module__.startswith("sqlmodel."):
+        case type() if is_sqlmodel_table(obj):
             from toprompt.sqlmodel_types import generate_schema_description
 
             return generate_schema_description(cast("type[SQLModel]", obj))
 
-        case _ if hasattr(obj, "__module__") and obj.__module__.startswith(
-            "sqlmodel."
-        ):  # SQLModel instance
+        case _ if is_sqlmodel_table(type(obj)):  # SQLModel instance
             from toprompt.sqlmodel_types import generate_schema_description
 
             # Get class documentation first
-            schema_doc = generate_schema_description(obj.__class__)  # type: ignore
+            schema_doc = generate_schema_description(cast("type[SQLModel]", type(obj)))
             # Add current values
             values = "\nCurrent Values:\n"
             for field_name, value in obj.__dict__.items():
@@ -193,6 +191,16 @@ async def to_prompt(  # noqa: PLR0911
 
         case _:
             return str(obj)
+
+
+def is_sqlmodel_table(obj: Any) -> bool:
+    """Check whether obj is a SQLModel table class (``table=True``)."""
+    if not isinstance(obj, type) or not hasattr(obj, "__table__"):
+        return False
+    return any(
+        base.__name__ == "SQLModel" and base.__module__.startswith("sqlmodel")
+        for base in obj.__mro__
+    )
 
 
 def is_base_prompt(obj: Any) -> bool:
