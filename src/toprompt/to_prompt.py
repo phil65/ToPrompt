@@ -91,7 +91,11 @@ async def to_prompt(  # noqa: PLR0911
             - "off": No templating (default)
             - "explicit": Only Template instances
             - "all": Template all strings (dangerous!)
-        **kwargs: Template variables if templating is enabled
+        **kwargs: Template variables (available as ``agent.<key>``) if templating
+            is enabled
+
+    Returns:
+        A text representation of the object
     """
     match obj:
         case Template() if template_mode != "off":
@@ -215,12 +219,17 @@ def render_prompt(
     template: str,
     agent_context: dict[str, Any],
 ) -> str:
-    """Render a prompt template with context.
+    """Render a Jinja2 prompt template.
 
-    Available variables:
-        agent.name: Name of the agent
-        agent.id: Number of the clone (for cloned agents)
-        agent.model: Model name
+    The context is exposed to the template as ``agent``, e.g.
+    ``render_prompt("Hi {{ agent.name }}", {"name": "Bot"})`` returns ``"Hi Bot"``.
+
+    Args:
+        template: Jinja2 template string
+        agent_context: Variables available as ``agent.<key>`` in the template
+
+    Returns:
+        The rendered string
     """
     from jinja2 import Environment
 
