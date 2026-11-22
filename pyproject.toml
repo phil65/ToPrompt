@@ -11,7 +11,18 @@ license-files = ["LICENSE"]
 authors = [
   { name = "Philipp Temminghoff", email = "philipptemminghoff@googlemail.com" },
 ]
-keywords = []
+keywords = [
+  "cli",
+  "dataclasses",
+  "fastapi",
+  "llm",
+  "prompt",
+  "prompt-engineering",
+  "pydantic",
+  "serialization",
+  "sqlite",
+  "sqlmodel",
+]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Framework :: Pydantic",
@@ -22,7 +33,10 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
   "Topic :: Software Development",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Text Processing",
   "Topic :: Utilities",
   "Typing :: Typed",
 ]
@@ -37,6 +51,7 @@ dependencies = [
 [project.urls]
 "Code coverage" = "https://app.codecov.io/gh/phil65/ToPrompt"
 Documentation = "https://phil65.github.io/ToPrompt/"
+Homepage = "https://phil65.github.io/ToPrompt/"
 Issues = "https://github.com/phil65/ToPrompt/issues"
 Source = "https://github.com/phil65/ToPrompt"
 
