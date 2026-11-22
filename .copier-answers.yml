@@ -15,7 +15,7 @@ python_minimum_version: '3.13'
 python_package_command_line_name: toprompt
 python_package_distribution_name: toprompt
 python_package_import_name: toprompt
-repository_name: toprompt
+repository_name: ToPrompt
 repository_namespace: phil65
 repository_provider: github.com
 
