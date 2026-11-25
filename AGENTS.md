@@ -52,7 +52,7 @@ uv run pytest                        # tests
 uvx ruff check . && uvx ruff format --check .
 uv run ty check                      # type check (src only, warnings fail too)
 uv run deptry src                    # dependency check
-uv run mkdocs-mknodes build          # docs build (output in site/)
+uv run mknodes build                 # docs build (output in site/)
 uv build                             # package
 uv run duty lint | lint_check | test | build | serve | update   # duties.py shortcuts
 ```
@@ -83,5 +83,5 @@ Pre-commit hooks (`.pre-commit-config.yaml`) run ruff, tombi, ty and pytest.
   transitively via the docs group.
 - `to_prompt()` is async; call it with `await` or `asyncio.run()`.
 - `template_mode="all"` renders every string as a Jinja2 template; only use it with trusted input.
-- The docs site is the mkdocs-mknodes default site (README + generated API pages); `docs/` is
+- The docs site is the mknodes default site (README + generated API pages); `docs/` is
   empty on purpose.

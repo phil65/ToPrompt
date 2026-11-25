@@ -56,8 +56,6 @@ theme:
 plugins:
   - search
   - autorefs
-  - mknodes:
-      render_by_default: false
   - mkdocstrings:
       default_handler: python
       handlers:
