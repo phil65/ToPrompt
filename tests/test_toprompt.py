@@ -56,6 +56,9 @@ async def test_dataclass():
     assert "SimpleDataclass" in result
     assert "test" in result
     assert "42" in result
+    # Evaluated annotations (PEP 649) are shown by name, not as "<class 'str'>"
+    assert "name = 'test' (str)" in result
+    assert "value = 42 (int)" in result
 
 
 async def test_pydantic():

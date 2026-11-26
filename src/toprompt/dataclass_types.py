@@ -1,4 +1,16 @@
-from typing import Any
+import annotationlib
+from typing import Any, ForwardRef
+
+
+def _type_name(tp: Any) -> str:
+    """Readable name of a field type (a string, a ForwardRef or a type)."""
+    if not tp:
+        return "any"
+    if isinstance(tp, str):
+        return tp
+    if isinstance(tp, ForwardRef):
+        return tp.__forward_arg__
+    return annotationlib.type_repr(tp)
 
 
 def format_dataclass_like(obj: Any) -> str:
@@ -19,7 +31,6 @@ def format_dataclass_like(obj: Any) -> str:
         if field.description:
             lines.append(f"- {field.name} = {value!r} ({field.description})")
         else:
-            type_name = field.type if field.type else "any"
-            lines.append(f"- {field.name} = {value!r} ({type_name})")
+            lines.append(f"- {field.name} = {value!r} ({_type_name(field.type)})")
 
     return "\n".join(lines)
