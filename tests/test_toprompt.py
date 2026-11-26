@@ -179,3 +179,43 @@ async def test_cli_objects_still_detected():
         """A CLI."""
 
     assert "cli" in (await to_prompt(cli)).lower()
+
+
+async def test_sqlite_quoted_table_names_and_index_case():
+    conn = sqlite3.connect(":memory:")
+    conn.execute('CREATE TABLE "order items" (id INTEGER PRIMARY KEY, userName TEXT)')
+    conn.execute(
+        'CREATE TABLE "select" ("weird""col" TEXT, ref INTEGER REFERENCES "order items"(id))'
+    )
+    conn.execute('CREATE UNIQUE INDEX idx_user ON "order items"(userName)')
+    conn.execute('CREATE INDEX "idx ""q""" ON "select"(ref, "weird""col")')
+    result = await to_prompt(conn)
+    assert "Table: order items" in result
+    assert "- idx_user: UNIQUE (userName)" in result
+    assert "Table: select" in result
+    assert '- weird"col: TEXT' in result
+    assert "- ref -> order items.id" in result
+    assert '- idx "q": (ref, weird"col)' in result
+    conn.close()
+
+
+def test_sqlite_file_opened_read_only(tmp_path, monkeypatch):
+    from toprompt.sqlite_types import get_sqlite_schema
+
+    path = tmp_path / "my db#1?.sqlite"
+    conn = sqlite3.connect(path)
+    conn.execute("CREATE TABLE t (id INTEGER)")
+    conn.commit()
+    conn.close()
+    real_connect = sqlite3.connect
+    calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
+
+    def spy(*args: object, **kwargs: object) -> sqlite3.Connection:
+        calls.append((args, kwargs))
+        return real_connect(*args, **kwargs)  # type: ignore[call-overload]
+
+    monkeypatch.setattr(sqlite3, "connect", spy)
+    assert "Table: t" in get_sqlite_schema(path)
+    [(args, kwargs)] = calls
+    assert kwargs.get("uri") is True
+    assert str(args[0]).endswith("?mode=ro")

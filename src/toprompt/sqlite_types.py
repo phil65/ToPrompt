@@ -92,7 +92,8 @@ def get_sqlite_schema(db: str | os.PathLike[str] | sqlite3.Connection) -> str:
         if not path.exists():
             msg = f"Database file not found: {path}"
             raise FileNotFoundError(msg)
-        conn = sqlite3.connect(path)
+        # Read-only: documenting a schema must not create journal files or take locks.
+        conn = sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro", uri=True)
         should_close = True
 
     try:
@@ -132,7 +133,8 @@ def get_tables(cursor: sqlite3.Cursor) -> list[str]:
 def get_table_info(cursor: sqlite3.Cursor, table: str) -> list[str]:
     """Get detailed information about a specific table."""
     # Get column information
-    cursor.execute(f"PRAGMA table_info({table})")
+    # Table-valued pragmas take the name as a parameter (quoted names, keywords).
+    cursor.execute("SELECT * FROM pragma_table_info(?)", (table,))
     columns: list[ColumnInfo] = [
         {
             "name": row[1],
@@ -145,7 +147,7 @@ def get_table_info(cursor: sqlite3.Cursor, table: str) -> list[str]:
     ]
 
     # Get foreign keys
-    cursor.execute(f"PRAGMA foreign_key_list({table})")
+    cursor.execute("SELECT * FROM pragma_foreign_key_list(?)", (table,))
     foreign_keys: list[ForeignKeyInfo] = [
         {
             "from_table": table,
@@ -156,16 +158,6 @@ def get_table_info(cursor: sqlite3.Cursor, table: str) -> list[str]:
         for row in cursor.fetchall()
     ]
 
-    # Get indices
-    cursor.execute(
-        """
-        SELECT name, sql FROM sqlite_master
-        WHERE type='index'
-        AND tbl_name=?
-        AND name NOT LIKE 'sqlite_%'
-        """,
-        (table,),
-    )
     indices = get_index_info(cursor, table)
 
     # Format table documentation
@@ -207,39 +199,28 @@ def get_table_info(cursor: sqlite3.Cursor, table: str) -> list[str]:
 
 
 def get_index_info(cursor: sqlite3.Cursor, table: str) -> list[IndexInfo]:
-    """Get information about indices on a table."""
+    """Get information about the explicitly created indices on a table."""
     cursor.execute(
         """
-        SELECT name, sql FROM sqlite_master
+        SELECT name FROM sqlite_master
         WHERE type='index'
         AND tbl_name=?
         AND name NOT LIKE 'sqlite_%'
         """,
         (table,),
     )
+    names = [row[0] for row in cursor.fetchall()]
+    cursor.execute('SELECT name, "unique" FROM pragma_index_list(?)', (table,))
+    unique = {name: bool(flag) for name, flag in cursor.fetchall()}
     indices: list[IndexInfo] = []
-
-    for name, sql in cursor.fetchall():
-        if not sql:
-            continue
-
-        # Parse SQL to extract column names and uniqueness
-        sql = sql.upper()
-        unique = "UNIQUE " in sql
-        # Extract column list from parentheses
-        cols_start = sql.find("(")
-        cols_end = sql.rfind(")")
-        if cols_start == -1 or cols_end == -1:
-            continue
-
-        cols = sql[cols_start + 1 : cols_end]
-        columns = [c.strip() for c in cols.split(",")]
-
+    for name in names:
+        # Original column names; None for expression columns.
+        cursor.execute("SELECT name FROM pragma_index_info(?) ORDER BY seqno", (name,))
+        columns = [col if col is not None else "<expression>" for (col,) in cursor.fetchall()]
         indices.append({
             "name": name,
             "table": table,
-            "unique": unique,
+            "unique": unique.get(name, False),
             "columns": columns,
         })
-
     return indices
