@@ -66,7 +66,7 @@ async def main() -> None:
 
     print(await to_prompt({"user": User("Bob", 25), "weather": Weather()}))
 
-    # Jinja2 templating is opt-in
+    # Jinja templating (via MiniJinja) is opt-in
     template = Template("Hello {{ agent.name }}!")
     print(await to_prompt(template, template_mode="explicit", name="Bot"))  # Hello Bot!
 
@@ -76,7 +76,7 @@ asyncio.run(main())
 
 ## Supported objects
 
-- **Strings** (returned as-is) and `Template` strings rendered with Jinja2
+- **Strings** (returned as-is) and `Template` strings rendered with MiniJinja
   (`template_mode="explicit"`, or `"all"` to template every string)
 - **Custom objects** implementing `__prompt__()` or a `__prompt_type__()` classmethod
   (sync or async), see the `PromptConvertible` / `PromptTypeConvertible` protocols

@@ -42,7 +42,7 @@ classifiers = [
 dependencies = [
   "clinspector>=0.2.0",
   "fieldz>=0.1.0",
-  "jinja2>=3.1",
+  "minijinja>=2.0",
   "pydantic",
   "schemez",
   # Only add below (Copier)

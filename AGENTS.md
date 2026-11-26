@@ -16,7 +16,7 @@ All code lives in `src/toprompt/`:
   `PromptConvertible`, `PromptTypeConvertible`, `AnyPromptType`).
 - `to_prompt.py`: the dispatcher. One big `match` statement in `to_prompt()`; the order of the
   `case` branches matters (e.g. `__prompt__` wins over field formatting, `str` before
-  containers). Also holds `render_prompt()` (Jinja2 templating, used for `Template` strings when
+  containers). Also holds `render_prompt()` (MiniJinja templating, used for `Template` strings when
   `template_mode` is `"explicit"` or `"all"`), the protocols, and detection helpers
   (`is_sqlmodel_table`, `is_base_prompt`, `can_format_fields`).
 - `dataclass_types.py`: `format_dataclass_like()`, generic formatter via `fieldz` (dataclasses,
@@ -82,6 +82,6 @@ Pre-commit hooks (`.pre-commit-config.yaml`) run ruff, tombi, ty and pytest.
   `[tool.ty.analysis] allowed-unresolved-imports`. `duty` is not declared and comes in
   transitively via the docs group.
 - `to_prompt()` is async; call it with `await` or `asyncio.run()`.
-- `template_mode="all"` renders every string as a Jinja2 template; only use it with trusted input.
+- `template_mode="all"` renders every string as a Jinja template; only use it with trusted input.
 - The docs site is the mknodes default site (README + generated API pages); `docs/` is
   empty on purpose.

@@ -124,6 +124,19 @@ async def test_templates_are_not_html_escaped():
     assert result == text
 
 
+async def test_render_prompt_minijinja():
+    from toprompt import render_prompt
+
+    template = "Hi {{ agent.name }}:\n{% for item in agent.items %}- {{ item }}\n{% endfor %}"
+    rendered = render_prompt(template, {"name": "Bot", "items": ["one", "two"]})
+    assert rendered == "Hi Bot:\n- one\n- two\n"
+
+    # Trailing newline is preserved and template_mode="all" renders plain strings.
+    assert await to_prompt("Hello {{ agent.name }}!\n", template_mode="all", name="World") == (
+        "Hello World!\n"
+    )
+
+
 async def test_template_mode_and_variables_survive_recursion():
     from toprompt import Template
 

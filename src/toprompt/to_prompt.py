@@ -27,6 +27,7 @@ from toprompt.sqlite_types import (
 
 
 if TYPE_CHECKING:
+    from minijinja import Environment
     from sqlmodel import SQLModel
 
 
@@ -220,31 +221,30 @@ def is_base_prompt(obj: Any) -> bool:
 
 
 @functools.cache
-def _jinja_env() -> Any:
-    from jinja2 import Environment
+def _jinja_env() -> Environment:
+    from minijinja import Environment
 
     # Prompts are plain text for an LLM, not HTML: no autoescaping.
-    return Environment(autoescape=False, keep_trailing_newline=True)
+    return Environment(auto_escape_callback=lambda _name: None, keep_trailing_newline=True)
 
 
 def render_prompt(
     template: str,
     agent_context: dict[str, Any],
 ) -> str:
-    """Render a Jinja2 prompt template.
+    """Render a Jinja prompt template using MiniJinja.
 
     The context is exposed to the template as ``agent``, e.g.
     ``render_prompt("Hi {{ agent.name }}", {"name": "Bot"})`` returns ``"Hi Bot"``.
 
     Args:
-        template: Jinja2 template string
+        template: Jinja template string
         agent_context: Variables available as ``agent.<key>`` in the template
 
     Returns:
         The rendered string
     """
-    tpl = _jinja_env().from_string(template)
-    return tpl.render(agent=agent_context)
+    return _jinja_env().render_str(template, agent=agent_context)
 
 
 def can_format_fields(obj: Any) -> bool:
