@@ -61,7 +61,7 @@ Pre-commit hooks (`.pre-commit-config.yaml`) run ruff, tombi, ty and pytest.
 
 ## Conventions
 
-- Python >= 3.13, `from __future__ import annotations` everywhere, Google-style docstrings.
+- Python >= 3.14, no `from __future__ import annotations` (PEP 649; banned via ruff TID251), Google-style docstrings.
 - Ruff with a broad rule set (line length 100, preview formatting); `datetime` must be imported
   as `dt` in new code (ICN001).
 - Type checking with ty, not mypy. Use `cast(...)` or targeted `# ty: ignore[rule]`, no
