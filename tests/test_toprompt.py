@@ -113,3 +113,69 @@ async def test_sqlmodel_table():
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+async def test_templates_are_not_html_escaped():
+    from toprompt import Template
+
+    text = 'a < b & "c" it\'s'
+    result = await to_prompt(Template("{{ agent.q }}"), template_mode="explicit", q=text)
+    assert result == text
+
+
+async def test_template_mode_and_variables_survive_recursion():
+    from toprompt import Template
+
+    tpl = Template("x={{ agent.x }}")
+    assert await to_prompt([tpl], template_mode="explicit", x=1) == "x=1"
+    assert await to_prompt({"k": tpl}, template_mode="explicit", x=1) == "k: x=1"
+    assert await to_prompt((tpl,), template_mode="explicit", x=2) == "x=2"
+
+    async def coro() -> str:
+        return tpl
+
+    assert await to_prompt(coro(), template_mode="explicit", x=3) == "x=3"
+    assert await to_prompt(lambda: tpl, template_mode="explicit", x=4) == "x=4"
+
+
+async def test_classes_are_not_instantiated():
+    created = []
+
+    class SideEffect:
+        def __init__(self) -> None:
+            created.append(self)
+
+    class WithPrompt:
+        def __prompt__(self) -> str:
+            return "instance prompt"
+
+    assert await to_prompt(int) == str(int)
+    assert await to_prompt(SideEffect) == str(SideEffect)
+    assert created == []
+    assert await to_prompt(WithPrompt) == str(WithPrompt)
+    assert await to_prompt(WithPrompt()) == "instance prompt"
+
+
+async def test_unrecognized_objects_do_not_probe_find_spec(monkeypatch):
+    import importlib.util
+
+    calls = []
+    real = importlib.util.find_spec
+
+    def spy(name: str, *args: object) -> object:
+        calls.append(name)
+        return real(name, *args)
+
+    monkeypatch.setattr(importlib.util, "find_spec", spy)
+    assert await to_prompt([object()] * 3)
+    assert calls == []
+
+
+async def test_cli_objects_still_detected():
+    import click
+
+    @click.group()
+    def cli() -> None:
+        """A CLI."""
+
+    assert "cli" in (await to_prompt(cli)).lower()

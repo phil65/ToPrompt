@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import importlib.util
+import sys
 from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 
@@ -54,42 +54,26 @@ def is_cli_object(obj: Any) -> bool:
     Args:
         obj: Object to check
     """
-    # ArgumentParser is from stdlib, so we can always check it
-    if importlib.util.find_spec("argparse"):
-        import argparse
+    # An instance can only exist once its module is imported, so look the classes up
+    # in sys.modules: no find_spec probes and no imports per object.
+    import argparse
 
-        if isinstance(obj, argparse.ArgumentParser):
+    if isinstance(obj, argparse.ArgumentParser):
+        return True
+    for module_name, class_name in _CLI_CLASSES:
+        module = sys.modules.get(module_name)
+        cls = getattr(module, class_name, None) if module else None
+        if isinstance(cls, type) and isinstance(obj, cls):
             return True
-
-    # Check Click
-    if importlib.util.find_spec("click"):
-        import click
-
-        if isinstance(obj, click.Group):
-            return True
-
-    # Check Typer
-    if importlib.util.find_spec("typer"):
-        import typer
-
-        if isinstance(obj, typer.Typer):
-            return True
-
-    # Check Cleo
-    if importlib.util.find_spec("cleo"):
-        from cleo.application import Application  # type: ignore
-
-        if isinstance(obj, Application):
-            return True
-
-    # Check Cappa
-    if importlib.util.find_spec("cappa"):
-        from cappa import Command as CappaCommand  # type: ignore
-
-        if isinstance(obj, CappaCommand):
-            return True
-
     return False
+
+
+_CLI_CLASSES = [
+    ("click", "Group"),
+    ("typer", "Typer"),
+    ("cleo.application", "Application"),
+    ("cappa", "Command"),
+]
 
 
 def format_cli_command(

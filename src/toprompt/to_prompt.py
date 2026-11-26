@@ -4,8 +4,9 @@ import argparse
 import asyncio
 from collections.abc import Awaitable, Callable, Coroutine
 from datetime import datetime
-import importlib.util
+import functools
 import re
+import sys
 from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
 
 from pydantic import BaseModel
@@ -113,7 +114,8 @@ async def to_prompt(  # noqa: PLR0911
                 return await result
             return result
 
-        case _ if hasattr(obj, "__prompt__"):
+        # Not for classes: their __prompt__ is an unbound instance method.
+        case _ if hasattr(obj, "__prompt__") and not isinstance(obj, type):
             result = cast("PromptConvertible", obj).__prompt__()
             if isinstance(result, Awaitable):
                 return await result
@@ -174,7 +176,9 @@ async def to_prompt(  # noqa: PLR0911
         case _ if can_format_fields(obj):
             return format_dataclass_like(obj)
         case dict():
-            results = await asyncio.gather(*(to_prompt(v) for k, v in obj.items()))
+            results = await asyncio.gather(
+                *(to_prompt(v, template_mode=template_mode, **kwargs) for v in obj.values())
+            )
             return "\n".join(f"{k}: {r}" for (k, _), r in zip(obj.items(), results))
 
         case _ if is_sqlite_db(obj):
@@ -182,16 +186,19 @@ async def to_prompt(  # noqa: PLR0911
             return get_sqlite_schema(obj)  # type: ignore
 
         case list() | tuple():
-            items = await asyncio.gather(*(to_prompt(item) for item in obj))
+            items = await asyncio.gather(
+                *(to_prompt(item, template_mode=template_mode, **kwargs) for item in obj)
+            )
             return "\n".join(items)
 
         case Coroutine():
             result = await obj
-            return await to_prompt(result, **kwargs)
+            return await to_prompt(result, template_mode=template_mode, **kwargs)
 
-        case _ if callable(obj):
+        # Calling a class would instantiate it (side effects, required arguments).
+        case _ if callable(obj) and not isinstance(obj, type):
             result = obj()
-            return await to_prompt(result, **kwargs)
+            return await to_prompt(result, template_mode=template_mode, **kwargs)
 
         case _:
             return str(obj)
@@ -208,11 +215,18 @@ def is_sqlmodel_table(obj: Any) -> bool:
 
 
 def is_base_prompt(obj: Any) -> bool:
-    if importlib.util.find_spec("llmling") is not None:
-        from llmling import BasePrompt
+    # An instance can only exist once its module is imported: no find_spec / import.
+    if (llmling := sys.modules.get("llmling")) is None:
+        return False
+    return isinstance(obj, llmling.BasePrompt)
 
-        return isinstance(obj, BasePrompt)
-    return False
+
+@functools.cache
+def _jinja_env() -> Any:
+    from jinja2 import Environment
+
+    # Prompts are plain text for an LLM, not HTML: no autoescaping.
+    return Environment(autoescape=False, keep_trailing_newline=True)
 
 
 def render_prompt(
@@ -231,10 +245,7 @@ def render_prompt(
     Returns:
         The rendered string
     """
-    from jinja2 import Environment
-
-    env = Environment(autoescape=True, keep_trailing_newline=True)
-    tpl = env.from_string(template)
+    tpl = _jinja_env().from_string(template)
     return tpl.render(agent=agent_context)
 
 
