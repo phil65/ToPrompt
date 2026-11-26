@@ -202,7 +202,7 @@ async def test_sqlite_quoted_table_names_and_index_case():
 def test_sqlite_file_opened_read_only(tmp_path, monkeypatch):
     from toprompt.sqlite_types import get_sqlite_schema
 
-    path = tmp_path / "my db#1?.sqlite"
+    path = tmp_path / "my db#1.sqlite"  # characters a URI must escape
     conn = sqlite3.connect(path)
     conn.execute("CREATE TABLE t (id INTEGER)")
     conn.commit()
