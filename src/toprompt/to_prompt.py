@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import argparse
 import asyncio
 from collections.abc import Awaitable, Callable, Coroutine

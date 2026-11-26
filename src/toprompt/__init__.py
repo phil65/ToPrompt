@@ -3,8 +3,6 @@
 Convert python objects to LLM-friendly descriptions.
 """
 
-from __future__ import annotations
-
 from importlib.metadata import version
 
 __version__ = version("toprompt")
